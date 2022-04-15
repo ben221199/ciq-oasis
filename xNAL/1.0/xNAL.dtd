@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!--
+    xNAL: eXtensible Name and Address Language
+	This is an XML document type definition (DTD) for
+	defining customer name and address information   
+	Date of Creation: 1 March 2001
+	Copyright(c) 2000, OASIS. All Rights Reserved [http://www.oasis-open.org]
+	Contact: Customer Information Quality Technical Committee, OASIS
+	Version: 1.0
+-->
+
+<!--Here xNL & xAL DTDs are defined as external entities.  --> 
+<!-- xNL : Name Markup Language; xAL : Address Markup Language -->
+<!ENTITY % xNL SYSTEM "xNL.dtd"> 
+<!ENTITY % xAL SYSTEM "xAL.dtd"> 
+
+%xNL;
+%xAL;
+
+<!--The root element xNAL contains the element CustomerRecord. All other elements are 
+    then defined within the CustomerRecord element. -->
+<!ELEMENT xNAL			(Record+)>
+
+<!--ELEMENTS OF CustomerRecord -->
+<!ELEMENT Record	(xNL?, xAL?)>
+
+
