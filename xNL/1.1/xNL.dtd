@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!--
+	xNL: eXtensible Name Language
+	This is an XML document type definition (DTD) for
+	defining customer name(s).
+	Date of Creation: 1 March 2001
+	Copyright(c) 2000, OASIS. All Rights Reserved [http://www.oasis-open.org]
+	Contact: Customer Information Quality Technical Committee, OASIS
+	Version: 1.1
+	   CHANGES FROM 1.0: 
+	   May 16, 2001:
+	    - Replaced attribute Type in FirstName, FirstNameDetails, MiddleName and LastName to
+	      NameType. Included a new attribute for these elements called "Type" 
+	    - Introduced a new element "AddresseeIndicator"
+	    - Removed Indicator attribute from Name, NameDetails, Person, PersonDetails
+	    - Changed attribute NameType of NameDetails to CustomerType 
+	    - Introduced NameType attribute for FormerName and MaidenName
+	    - Changed Preposition Element to LastNamePrefix
+	    - Changed LastName to cater for multiplicity 
+	    - Changed FirstName to cater for multiplicity
+	    - Removed fixed attribute value restriction for NameType attribute on FirstName, 
+	      MiddleName and LastName
+	    - Removed PersonName element
+	    - Changed MaidenName to OtherName and made it handle multiplicity
+	    - Removed FirstNameDetails element and FirstNameExtra element and instead, use
+	      FirstName itself
+-->
+<!--===========================NAML Document==============================-->
+<!--The root element xNL contains the element CustomerNameDetails. All other elements
+are then defined within the CustomerNameDetails element. This is so multiple records can 
+be in the one XML file.   
+-->
+<!ELEMENT xNL (NameDetails+)>
+
+<!ELEMENT NameDetails (AddresseeIndicator?, (Name* | (PersonName?, Function?) | OrganisationName*), 
+                       (DependencyName | DependencyNameDetails)?)>	 
+<!ATTLIST NameDetails CustomerType (Person | Organisation) #REQUIRED> 
+
+<!-- Specific for name and address where the addressee is specified. eg. ATTENTION, 
+     ter attentie van (in Holland), etc -->
+<!ELEMENT AddresseeIndicator   (#PCDATA)> 
+
+<!ELEMENT Name (#PCDATA)> <!-- Person or a company -->
+<!-- Joint Name, free format name, etc.. -->
+<!ATTLIST Name NameType CDATA #IMPLIED>
+ 
+<!-- ORGANISATION DETAILS -->
+<!ELEMENT OrganisationName (#PCDATA)> 
+<!--- Pty. Ltd, Inc, etc. -->
+<!ATTLIST OrganisationName Type CDATA #IMPLIED> 
+<!-- can be legal name, trading name, former name, abbreviation, etc... -->
+<!ATTLIST OrganisationName NameType  CDATA #IMPLIED>  
+
+<!ELEMENT PersonName       (PrecedingTitle*, Title*, FirstName*, MiddleName*, LastNamePrefix?, 
+							LastName*, OtherName*, FormerName*, Alias*, GenerationIdentifier*, 
+						    Suffix*, GeneralSuffix?)>
+
+<!-- HIS EXCELLENCY, ESTATE OF THE LATE .......-->
+<!ELEMENT PrecedingTitle (#PCDATA)>
+
+<!ELEMENT Title (#PCDATA)>
+<!--- plural title such as MESSRS.....-->
+<!ATTLIST Title Type CDATA #IMPLIED> 
+
+<!ELEMENT FirstName (#PCDATA)>
+<!-- Given Name, Christian Name, First Name, etc.. -->
+<!ATTLIST FirstName  NameType CDATA #IMPLIED>
+<!-- official, unofficial, initial, etc... -->
+<!ATTLIST FirstName  Type  CDATA #IMPLIED>
+
+<!ELEMENT MiddleName (#PCDATA)>  
+<!-- Given Name, Christian Name, First Name, etc.. -->
+<!ATTLIST MiddleName NameType CDATA #IMPLIED>
+<!-- official, unofficial, initial, etc... -->
+<!ATTLIST MiddleName Type  CDATA #IMPLIED>
+
+<!--- DE, LA, VAN DE.... -->
+<!ELEMENT LastNamePrefix (#PCDATA)>
+<!ELEMENT LastName (#PCDATA)>
+<!ATTLIST LastName NameType CDATA #IMPLIED>
+<!-- official, unofficial, initial, etc... -->
+<!ATTLIST LastName Type CDATA #IMPLIED>
+
+<!ELEMENT OtherName (#PCDATA)>
+<!-- Maiden Name, Patronymic name, Matronymic name, etc. -->
+<!ATTLIST OtherName NameType CDATA #IMPLIED>
+
+<!ELEMENT FormerName (#PCDATA)>
+<!ATTLIST FormerName NameType CDATA #IMPLIED>
+
+<!-- Nick Name, Pet name, etc.. -->
+<!ELEMENT Alias (#PCDATA)>
+<!ATTLIST Alias Type CDATA #IMPLIED>
+
+<!-- JNR, THE THIRD, III -->
+<!ELEMENT GenerationIdentifier  (#PCDATA)>
+
+<!-- Could be compressed initials - PhD, VC, QC -->
+<!ELEMENT Suffix (#PCDATA)>
+
+<!-- DECEASED, RETIRED ... -->
+<!ELEMENT GeneralSuffix  (#PCDATA)>
+
+<!-- Managing Director, CEO, Marketing Manager, etc.. -->
+<!ELEMENT Function (#PCDATA)>                            
+
+<!-- Person-Person/Person-Organisation Relationship -->
+<!ELEMENT DependencyName (#PCDATA)>
+<!-- Care of, Wife of, etc... -->
+<!ATTLIST DependencyName DependencyType CDATA #IMPLIED>
+
+<!ELEMENT DependencyNameDetails (NameDetails)>
+<!ATTLIST DependencyNameDetails DependencyType CDATA #IMPLIED>

@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!--
+	xNL: eXtensible Name Language
+	This is an XML document type definition (DTD) for
+	defining customer name(s).
+	Date of Creation: 1 March 2001
+	Copyright(c) 2000, OASIS. All Rights Reserved [http://www.oasis-open.org]
+	Contact: Customer Information Quality Technical Committee, OASIS
+	Version: 1.0
+-->
+<!--===========================NAML Document==============================-->
+<!--The root element xNL contains the element CustomerNameDetails. All other elements
+are then defined within the CustomerNameDetails element. This is so multiple records can 
+be in the one XML file.   
+-->
+<!ELEMENT xNL (NameDetails+)>
+<!ATTLIST NameDetails NameType (Person | Organisation) #REQUIRED>
+
+<!ELEMENT NameDetails (((Name* | PersonName | PersonNameDetails)? | OrganisationName*), 
+                               (DependencyName | DependencyNameDetails)?)>	 
+<!ELEMENT Name (#PCDATA)> <!-- Person or a company -->
+<!-- Joint Name, free format name, etc.. -->
+<!ATTLIST Name Type CDATA #IMPLIED>
+<!-- ATTENTION, TO, etc.... -->
+<!ATTLIST Name Indicator CDATA #IMPLIED>
+
+<!-- ORGANISATION DETAILS -->
+<!ELEMENT OrganisationName (#PCDATA)>
+<!-- ATTENTION, TO, etc.... -->
+<!ATTLIST OrganisationName Indicator CDATA #IMPLIED>
+<!--- Pty. Ltd, Inc, etc. -->
+<!ATTLIST OrganisationName Type CDATA #IMPLIED> 
+<!-- can be legal name, trading name, former name, abbreviation, etc... -->
+<!ATTLIST OrganisationName NameType  CDATA #IMPLIED> 
+
+
+<!-- PERSON DETAILS  -->
+<!ELEMENT PersonName (#PCDATA)>
+<!-- ATTENTION, TO, etc.... -->
+<!ATTLIST PersonName Indicator CDATA #IMPLIED>
+<!ELEMENT PersonNameDetails (PrecedingTitle*, Title*, (FirstName | FirstNameDetails), MiddleName*, 
+						     Preposition?, LastName, MaidenName?, FormerName*, Alias*, GenerationIdentifier*, 
+						     Suffix*, GeneralSuffix?)>
+<!-- ATTENTION, TO, etc.... -->
+<!ATTLIST PersonNameDetails Indicator CDATA #IMPLIED>
+<!-- HIS EXCELLENCY, ESTATE OF THE LATE .......-->
+<!ELEMENT PrecedingTitle (#PCDATA)>
+<!ELEMENT Title (#PCDATA)>
+<!--- plural title such as MESSRS.....-->
+<!ATTLIST Title Type CDATA #IMPLIED> 
+<!ELEMENT FirstName (#PCDATA)>
+<!ATTLIST FirstName  Type (First_Name | GivenName | ChristianName | Official | UnOfficial | Initial) 'First_Name'>
+<!ELEMENT FirstNameDetails (FirstName, FirstNameExtra?)>
+<!ATTLIST FirstNameDetails Type (First_Name | GivenName | ChristianName | Official | UnOfficial | Initial) 'First_Name'>
+<!ELEMENT FirstNameExtra (#PCDATA)>
+<!ATTLIST FirstNameExtra Type CDATA #IMPLIED>
+<!ELEMENT MiddleName (#PCDATA)>  
+<!ATTLIST MiddleName Type (Middle_Name | GivenName | ChristianName | Initial) 'Middle_Name'>
+<!--- DE, LA, VAN DE.... -->
+<!ELEMENT Preposition (#PCDATA)>
+<!ELEMENT LastName (#PCDATA)>
+<!ATTLIST LastName Type (Last_Name | SurName | FamilyName) 'Last_Name'>
+<!ELEMENT MaidenName (#PCDATA)>
+<!ELEMENT FormerName (#PCDATA)>
+<!ELEMENT Alias (#PCDATA)>
+<!ATTLIST Alias Type CDATA #IMPLIED>
+<!-- JNR, THE THIRD, III -->
+<!ELEMENT GenerationIdentifier  (#PCDATA)>
+<!-- Could be compressed initials - PhD, VC, QC -->
+<!ELEMENT Suffix (#PCDATA)>
+<!-- DECEASED, RETIRED ... -->
+<!ELEMENT GeneralSuffix  (#PCDATA)>
+                            
+<!-- Person-Person/Person-Organisation Relationship -->
+<!ELEMENT DependencyName (#PCDATA)>
+<!-- Care of, Wife of, etc... -->
+<!ATTLIST DependencyName DependencyType CDATA #IMPLIED>
+<!ELEMENT DependencyNameDetails (NameDetails)>
+<!ATTLIST DependencyNameDetails DependencyType CDATA #IMPLIED>
