@@ -1,0 +1,329 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!--
+	xAL: eXtensible Address Language
+	This is an XML document type definition (DTD) for
+	defining addresses.
+	Date of Creation: 1 March 2001
+	Copyright(c) 2000, OASIS. All Rights Reserved [http://www.oasis-open.org]
+	Contact: Customer Information Quality Technical Committee, OASIS
+	Version: 1.0
+-->
+ 
+<!ELEMENT xAL (AddressDetails+)>
+<!ELEMENT AddressDetails ((Address | AddressLines | Country | AdministrativeArea | Locality | Street))>
+<!-- Track changes to customer address details 
+     AddressType   -> Postal, residential,business, etc..
+     CurrentStatus -> Moved, Living, Investment, Deceased, etc..
+     ValidFromDate -> Start Date of the validity of address
+     ValidToDate   -> End date of the validity of address
+     Usage         -> Communication, Contact, etc. -->
+
+<!ATTLIST AddressDetails
+		  				 AddressType    CDATA #IMPLIED 
+	      				 CurrentStatus  CDATA #IMPLIED
+	      				 ValidFromDate  CDATA #IMPLIED
+	      				 ValidToDate    CDATA #IMPLIED
+	      				 Usage          CDATA #IMPLIED
+>
+<!-- The order of the AddressLine elements must be preserved-->
+<!ELEMENT AddressLines (AddressLine+)>
+<!ELEMENT Address (#PCDATA)>
+<!ELEMENT AddressLine  (#PCDATA)> 
+ 
+<!-- Specification of a country	--> 
+<!ELEMENT Country ((AddressLines) | (CountryCode*, CountryName*, (AdministrativeArea | Locality | Street)*))>
+
+<!-- Specification of an administrative area. Examples of administrative areas are provinces, bundesamts, etc. There are two places 
+     where the name of an administrative area can be specified. --> 
+<!ELEMENT AdministrativeArea (AddressLines | (AdministrativeAreaName*, SubAdministrativeArea?, (Locality | PostOffice | PostalCode)?))>
+<!-- Province or State or County or Kanton or Unknown-->
+<!ATTLIST AdministrativeArea Type CDATA  #IMPLIED>
+<!-- Erode (Dist) where (Dist) is the Indicator -->
+<!ATTLIST AdministrativeArea Indicator CDATA #IMPLIED>
+
+<!-- Specification of a sub-administrative area. An example of a sub-administrative areas is a county. There are two places where the name 
+     of an administrative area can be specified. 		-->
+<!ELEMENT SubAdministrativeArea (SubAdministrativeAreaName*)>
+<!-- Possible values but not limited to: Province or State or County or Kanton or Unknown-->
+<!ATTLIST SubAdministrativeArea Type CDATA  #IMPLIED>
+<!-- Erode (Dist) where (Dist) is the Indicator -->
+<!ATTLIST SubAdministrativeArea Indicator CDATA #IMPLIED>
+
+<!-- Specification of a locality. Examples of localities are cities, reservations and any other built-up areas.			-->
+<!ELEMENT Locality (AddressLines | (LocalityName*, (PostBox | LargeMailUser | PostOffice)?, Street?, Premise?, DependentLocality?, PostalCode?)) >
+<!-- Possible values not limited to: City, IndustrialEstate, Unknown -->
+<!ATTLIST Locality Type CDATA  #IMPLIED>
+<!-- Erode (Dist) where (Dist) is the Indicator -->
+<!ATTLIST Locality Indicator CDATA #IMPLIED>
+
+<!-- Dependent localities are Districts within cities/towns, locality divisions, postal divisions of cities, suburbs, etc. 
+     DependentLocality is a recursive element, but no nesting deeper than two exists (Locality->DependentLocality->DependentLocality).		-->
+<!ELEMENT DependentLocality (AddressLines | (DependentLocalityName*, (PostBox | LargeMailUser | PostOffice)?, Street?, Premise?, DependentLocality?, PostalCode?))>
+<!-- City or IndustrialEstate or Unknown When in use for DependentLocality: PostalZone -->
+<!ATTLIST DependentLocality Type CDATA  #IMPLIED>
+<!-- Eg. VIA as in Hill Top VIA Parish where Parish is a locality and Hill Top is a dependent locality -->
+<!ATTLIST DependentLocality Connector CDATA  #IMPLIED>
+<!-- Erode (Dist) where (Dist) is the Indicator -->
+<!ATTLIST DependentLocality Indicator CDATA #IMPLIED>
+
+<!-- Possible values not limited to: Company, Institution, Cedex, LargeUser -->
+<!-- Specification of a large mail user address. Examples of large mail users are postal companies, companies in France with a cedex 
+     number, hospitals and airports with their own post code. Large mail user addresses do not have a street name with premise name or premise number.			-->
+<!ELEMENT LargeMailUser (AddressLines | (LargeMailUserName*, LargeMailUserIdentifier?, BuildingName*, Department?, PostalCode?))>
+<!ATTLIST LargeMailUser  Type CDATA  'LargeUser' >
+ 
+<!-- Specification of a post office. Examples are a rural post office where post is delivered and a post office containing post office boxes. 			-->
+<!ELEMENT PostOffice (AddressLines | ((PostOfficeName* | PostOfficeNumber?), PostalRoute?, PostBox?, PostalCode?))>
+<!-- Could be a Mobile Postoffice Van as in Isreal -->
+<!ATTLIST PostOffice Type CDATA  #IMPLIED>
+<!-- Kottivakkam (P.O) here (P.O) is the Indicator -->
+<!ATTLIST PostOffice Indicator CDATA  #IMPLIED>
+
+<!-- Specification of a postbox like mail delivery point. Only a single postbox number can be specified. Examples of postboxes are POBox, 
+     free mail numbers, etc. PostBoxType possible values are, not limited to: POBox and Freepost.		-->
+<!ELEMENT PostBox (AddressLines | (PostBoxNumber, PostBoxNumberPrefix?, PostBoxNumberSuffix?, Firm?, PostalCode?))>
+<!ATTLIST PostBox  Type CDATA  #IMPLIED>
+<!-- LOCKED BAG NO:1234 where the Indicator is NO: and Type is LOCKED BAG -->
+<!ATTLIST PostBox  Indicator CDATA #IMPLIED> 
+
+<!-- Specification of a firm, company, organization, etc. It can be specified as part of an address that contains a street or a postbox. 
+     It is therefore different from a large mail user address, which contains neither a street nor a postbox.			-->
+<!ELEMENT Firm (AddressLines | (FirmName+, Department*, PostalCode?))> 
+<!-- Firm type could be company, university, etc.. -->
+<!ATTLIST Firm Type  CDATA #IMPLIED> 
+
+<!ELEMENT Department (DepartmentName+ , PostalCode?)>
+<!-- School in Physics School -->
+<!ATTLIST Department Type   CDATA #IMPLIED>
+
+<!-- Specification of a street.			-->
+<!ELEMENT Street (AddressLines | (StreetName*, StreetPreDirection?, StreetLeadingType?, StreetTrailingType?, (StreetNumber | StreetRange)?, StreetNumberType?, StreetNumberSuffix?,
+                  StreetPostDirection?, DependentStreet?, ( Premise | Firm | PostalCode)?))>
+<!-- Any street dependent on this street in the address -->
+<!ATTLIST Street DependentStreets (Yes|No) "No">
+<!-- Corner of, Intersection of -->
+<!ATTLIST Street  DependentStreetsIndicator  CDATA #IMPLIED> 
+<!-- Corner of Street1 AND Street 2 where AND is the Connector -->
+<!ATTLIST Street  DependentStreetsConnector  CDATA #IMPLIED>
+<!-- STS in GEORGE & ADELAIDE STS, RDS IN A & B RDS, etc. Use only when
+     both the street types are the same -->
+<!ATTLIST Street  DependentStreetsType  CDATA #IMPLIED>
+
+<!-- DependentStreet is related to a street; occurs in GB, IE, ES, PT -->
+<!-- Corner of, Intersection are the indicators -->
+<!ELEMENT DependentStreet (AddressLines | (StreetName*, StreetPreDirection?, StreetLeadingType?, StreetTrailingType?, StreetPostDirection?))>
+
+<!-- Specification of a single premise, for example a house or a building. The premise as 
+     a whole has a unique premise (house) number or a premise name. 	-->
+<!-- There could be more than one premise in a street referenced in an address. For example a building address
+     near a major shopping centre or raiwlay station  -->
+<!ELEMENT Premise (AddressLines | (PremiseName*, (PremiseLocation | PremiseNumber)?, PremiseNumberPrefix?, PremiseNumberSuffix?, BuildingName*, (SubPremise* | Firm?), PostalCode?, Premise?))>
+<!-- COMPLEXE in COMPLEX DES JARDINS -->
+<!ATTLIST Premise Type CDATA  #IMPLIED>
+<!-- STREET, PREMISE, SUBPREMISE, PARK, FARM, etc -->
+<!ATTLIST Premise PremiseDependency CDATA  #IMPLIED>
+<!-- NEAR, ADJACENT TO, ..... -->
+<!ATTLIST Premise PremiseDependencyType CDATA #IMPLIED> 
+<!-- DES, DE, LA, LA, DU in RUE DU BOIS. These terms connect a premise/street type and
+     premise/street name. Terms may appear with names AVE DU BOIS -->
+<!ATTLIST Premise PremiseStreetConnector CDATA #IMPLIED>
+
+<!-- Specification of a single sub-premise. Examples of sub-premises are apartments and suites. Each sub-premise 
+     should be uniquely identifiable. SubPremiseType: Specification of the name of a sub-premise type. Possible values not limited to: 
+     Suite, Appartment, Floor, Unknown.			-->
+<!-- Multiple levels within a premise by recursively calling SubPremise Eg. Level 4, Suite 2, Block C -->
+<!ELEMENT SubPremise (AddressLines | (SubPremiseName*, (SubPremiseLocation | SubPremiseNumber)?, SubPremiseNumberPrefix?, SubPremiseNumberSuffix?, BuildingName*, Firm?, PostalCode?, SubPremise?))>
+<!-- SubPremiseType may be Apartment, Lot, etc.-->
+<!ATTLIST SubPremise Type CDATA  #IMPLIED>
+
+<!-- Specification of a postcode. The postcode is formatted according to country-specific rules. Example: SW3 0A8-1A
+			-->
+<!ELEMENT PostalCodeNumber (#PCDATA)>
+<!-- Old Postal Code, new code, etc-->
+<!ATTLIST PostalCodeNumber NumberType  CDATA #IMPLIED> 
+
+<!-- Sub-element of the PostalCode, specification of a post town. A post town is not the same as a locality. 
+     A post town can encompass a collection of (small) localities. It can also be a subpart of a locality. An actual post town in Norway is "Bergen". 		-->
+<!ELEMENT PostTown (PostTownName+, PostTownSuffix?)>
+<!ATTLIST PostTown Type CDATA #IMPLIED>
+
+<!-- Values may for example be CEDEX 16 (France)-->
+<!ELEMENT SortingCode (#PCDATA)> 
+
+<!-- Examples are: 1234 (USA), 1G (UK), etc. -->
+<!ELEMENT PostalCodeNumberExtension (#PCDATA)>
+<!-- DeliveryPointSuffix, NewPostalCode, etc.. -->
+<!ATTLIST PostalCodeNumberExtension Type  CDATA #IMPLIED> 
+
+<!-- Specification of the name of an administrative area. Examples of administrative areas are provinces counties, special regions 
+     (such as "Rijnmond"), etc. Possible values of NameType not limited to: Official, Unique, Abbreviation, OldName, Synonym.			-->
+<!ELEMENT AdministrativeAreaName (#PCDATA)> 
+<!ATTLIST AdministrativeAreaName NameType CDATA #IMPLIED>
+
+<!-- Specification of the sub-administrative area name. Examples are county (Ireland) and concelho (Portugal). Possible values of 
+     NameType not limited to: Official, Unique, Abbreviation, OldName, Synonym.			-->
+<!ELEMENT SubAdministrativeAreaName (#PCDATA)>
+<!ATTLIST SubAdministrativeAreaName NameType CDATA #IMPLIED> 
+
+<!--#DOCUMENTATION:Specification of the name of a locality. Possible values of NameType not limited to: Official, Unique, Abbreviation, 
+     OldName, Synonym.			-->
+<!ELEMENT LocalityName (#PCDATA)> 
+<!ATTLIST LocalityName NameType CDATA #IMPLIED>
+
+<!-- Specification of the name of a street (also dependant street name). Possible values of NameType not limited to: 
+     Official, Unique, Abbreviation, OldName, Synonym.			-->
+<!ELEMENT StreetName (#PCDATA)>
+<!-- Possible values of NameType not limited to: Official, Unique, Abbreviation, 
+     OldName, Synonym.			-->
+<!ATTLIST StreetName NameType  CDATA #IMPLIED>   
+<!ELEMENT StreetLeadingType   (#PCDATA)>
+<!ELEMENT StreetTrailingType   (#PCDATA)>
+<!ELEMENT StreetNumber         (#PCDATA)>
+<!ATTLIST StreetNumber NumberType  (Single|Range) "Single">
+<!-- No. in Street No.12 -->
+<!ATTLIST StreetNumber Indicator CDATA #IMPLIED>
+<!-- No.12 where "No." is before actual street number -->
+<!ATTLIST StreetNumber IndicatorOccurrence (Before|After) "After">
+<!ELEMENT StreetNumberSuffix   (#PCDATA)>         
+<!ELEMENT StreetPreDirection   (#PCDATA)>
+<!ELEMENT StreetPostDirection  (#PCDATA)>
+<!-- LODGE in LODGE 5 ARCHER STREET -->
+<!ELEMENT StreetNumberType     (#PCDATA)> 
+<!-- 1-3 Albert Avenue -->
+<!ELEMENT StreetRange (StreetNumberFrom, StreetNumberTo)>
+<!-- Odd/Even -->
+<!ATTLIST StreetRange Type CDATA #IMPLIED>
+<!ELEMENT StreetNumberFrom  (#PCDATA)>
+<!ELEMENT StreetNumberTo  (#PCDATA)>
+
+<!-- Specification of the number of the postoffice. Common in rural postoffices-->
+<!ELEMENT PostOfficeNumber (#PCDATA)>
+<!-- MS in MS 62 -->
+<!ATTLIST PostOfficeNumber Indicator CDATA #IMPLIED>
+<!-- MS occurs before 62 in MS 62 -->
+<!ATTLIST PostOfficeNumber IndicatorOccurrence (Before|After) "Before">
+
+<!-- Specification of the name of the post office. This can be a rural postoffice where post is delivered or a post 
+     office containing post office boxes.  Possible values of NameType not limited to: Official, Unique, Abbreviation, OldName, Synonym.			-->
+<!ELEMENT PostOfficeName (#PCDATA)> 
+<!ATTLIST PostOfficeName NameType CDATA #IMPLIED>
+
+<!-- A Postal van is specific for a route as in Is`rael -->
+<!ELEMENT PostalRoute ((PostalRouteName+ | PostalRouteNumber))>
+<!ATTLIST PostalRoute Type  CDATA #IMPLIED>
+<!ELEMENT PostalRouteName   (#PCDATA)>
+<!ATTLIST PostalRouteName NameType CDATA #IMPLIED>
+<!--Possible values of NameType not limited to: Official, Unique, Abbreviation, OldName, Synonym. -->
+<!ELEMENT PostalRouteNumber (#PCDATA)>
+
+<!-- Specification of the name of a building. See also the specification of the SinglePremise element. Possible values 
+     of NameType not limited to: Official, Unique, Abbreviation, OldName, Synonym.		-->
+<!ELEMENT BuildingName (#PCDATA)>
+<!-- Possible values of NameType not limited to: Official, Unique, Abbreviation, 
+     OldName, Synonym.			-->
+<!ATTLIST BuildingName NameType  CDATA #IMPLIED>   
+<!-- EGIS Building where EGIS occurs before Building -->
+<!ATTLIST BuildingName TypeOccurrence (Before|After) "Before"> 
+
+<!-- Specification of the name of the premise (house, building, park, farm, etc). A premise name is specified when the premise cannot be addressed 
+     using a street name plus premise (house) number. Possible values of NameType not limited to: Official, Unique, Abbreviation, OldName, Synonym.			-->
+<!ELEMENT PremiseName (#PCDATA)>
+<!-- Possible values of NameType not limited to: Official, Unique, Abbreviation, 
+     OldName, Synonym.			-->
+<!ATTLIST PremiseName NameType  CDATA #IMPLIED>   
+<!-- EGIS Building where EGIS occurs before Building, DES JARDINS occurs after COMPLEXE DES JARDINS -->
+<!ATTLIST PremiseName TypeOccurrence (Before|After) "Before"> 
+
+<!-- Specification of the identifier of the premise (house, building, etc). Premises in a street are often uniquely identified by means 
+     of consecutive identifiers. The identifier can be a number, a letter or any combination of the two.  -->
+<!ELEMENT PremiseNumber (#PCDATA)>  
+<!-- No. in House No.12 -->
+<!ATTLIST PremiseNumber Indicator CDATA #IMPLIED>
+<!-- No. occurs before 12 -->
+<!ATTLIST PremiseNumber IndicatorOccurrence (Before|After) "Before">
+<!--  2 in BUILDING 12 occurs "after" premise type BUILDING--> 
+<!ATTLIST PremiseNumber NumberTypeOccurrence (Before|After) "Before">
+
+<!-- LOBBY, BASEMENT, GROUND FLOOR, etc... -->
+<!ELEMENT PremiseLocation  (#PCDATA)>
+<!ELEMENT PremiseNumberSuffix (#PCDATA)>
+<!ELEMENT PremiseNumberPrefix (#PCDATA)>
+
+<!-- Possible values of NameType not limited to: Official, Unique, Abbreviation, OldName, Synonym.			-->
+<!ELEMENT SubPremiseName (#PCDATA)> 
+<!-- Possible values of NameType not limited to: Official, Unique, Abbreviation, 
+     OldName, Synonym.			-->
+<!ATTLIST SubPremiseName NameType  CDATA #IMPLIED>  
+<!-- EGIS Building where EGIS occurs before Building -->
+<!ATTLIST SubPremiseName TypeOccurrence (Before|After) "Before">
+
+<!-- Specification of the identifier of a sub-premise. Examples of sub-premises are apartments and suites. sub-premises in a building are often 
+     uniquely identified by means of consecutive identifiers. The identifier can be a number, a letter or any combination of the two. In the latter case, the 
+     identifier includes exactly one variable (range) part, which is either a number or a single letter that is surrounded by fixed parts at the left (prefix) 
+     or the right (postfix).			-->
+<!ELEMENT SubPremiseNumber (#PCDATA)> 
+<!-- TH in 12TH which is a floor number, NO. in NO.1-->
+<!ATTLIST SubPremiseNumber Indicator CDATA #IMPLIED>
+<!-- No. occurs before 1 in No.1, or TH occurs after 12 in 12TH -->
+<!ATTLIST SubPremiseNumber IndicatorOccurrence (Before|After) "Before">
+<!-- 12TH occurs "before" FLOOR (a type of subpremise) in 12TH FLOOR --> 
+<!ATTLIST SubPremiseNumber NumberTypeOccurrence (Before|After) "Before">
+<!-- LOBBY, BASEMENT, GROUND FLOOR, etc... -->
+<!ELEMENT SubPremiseLocation  (#PCDATA)>
+<!ELEMENT SubPremiseNumberSuffix (#PCDATA)>
+<!ELEMENT SubPremiseNumberPrefix (#PCDATA)>
+
+<!-- Specification of the name of a post town. A post town is not the same as a locality. A post town can encompass a collection of (small) localities. 
+     It can also be a subpart of a locality. Possible values of NameType not limited to: Official, Unique, Abbreviation, OldName, Synonym.		-->
+<!ELEMENT PostTownName (#PCDATA)> 
+<!-- Possible values of NameType not limited to: Official, Unique, Abbreviation, 
+     OldName, Synonym.			-->
+<!ATTLIST PostTownName NameType  CDATA #IMPLIED>  
+<!-- GENERAL PO in MIAMI GENERAL PO -->
+<!ELEMENT PostTownSuffix (#PCDATA)>
+
+<!-- Specification of the number of a postbox 		-->
+<!ELEMENT PostBoxNumber (#PCDATA)> 
+<!ELEMENT PostBoxNumberPrefix (#PCDATA)>
+<!ELEMENT PostBoxNumberSuffix (#PCDATA)>
+
+<!-- Specification of the name of a large mail user. Possible values of NameType not limited to: Official, Unique, Abbreviation, OldName, Synonym.			-->
+<!ELEMENT LargeMailUserName (#PCDATA)> 
+<!-- Possible values of NameType not limited to: Official, Unique, Abbreviation, 
+     OldName, Synonym.			-->
+<!ATTLIST LargeMailUserName NameType  CDATA #IMPLIED>  
+
+<!-- Specification of the name of a firm. Examples of a firm are companies and organizations. Possible values of NameType not limited to: Official, 
+     Unique, Abbreviation, OldName, Synonym.		-->
+<!ELEMENT FirmName (#PCDATA)> 
+<!-- Possible values of NameType not limited to: Official, Unique, Abbreviation, 
+     OldName, Synonym.			-->
+<!ATTLIST FirmName NameType  CDATA #IMPLIED> 
+ 
+<!-- Specification of the name of a department. Possible NameType values not limited to: Official, Unique, Abbreviation, OldName, Synonym.			-->
+<!ELEMENT DepartmentName (#PCDATA)> 
+<!-- Possible values of NameType not limited to: Official, Unique, Abbreviation, 
+     OldName, Synonym.			-->
+<!ATTLIST DepartmentName NameType  CDATA #IMPLIED>  
+
+<!-- Specification of the name of a country. -->
+<!ELEMENT CountryName (#PCDATA)> 
+<!-- Possible values of NameType not limited to: Official, Unique, Abbreviation, 
+     OldName, Synonym.			-->
+<!ATTLIST  CountryName NameType CDATA #IMPLIED>
+<!-- Country code scheme possible values, but not limited to: iso.3166-2, iso.3166-3 for two- and three-character country codes.		-->
+<!ELEMENT CountryCode (#PCDATA)> 
+<!--Possible values, but not limited to: iso.3166-2, iso.3166-3 for country code schemes-->
+<!ATTLIST CountryCode Scheme CDATA  #IMPLIED>
+
+<!-- Specification of the identification number of a large mail user. An example are the Cedex codes in France.			-->
+<!ELEMENT LargeMailUserIdentifier (#PCDATA)> 
+<!ATTLIST LargeMailUserIdentifier Type CDATA #IMPLIED>
+<!-- Building 429 in which Building is the Indicator -->
+<!ATTLIST LargeMailUserIdentifier Indicator CDATA #IMPLIED>
+
+<!-- PostalCode is the container element for either simple or complex (extended) postal codes. -->
+<!ELEMENT PostalCode (PostalCodeNumber, PostTown?, SortingCode?, PostalCodeNumberExtension?)>
+
+<!ELEMENT DependentLocalityName (#PCDATA)> 
